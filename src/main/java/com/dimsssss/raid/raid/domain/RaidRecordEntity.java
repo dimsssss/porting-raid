@@ -1,7 +1,8 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,21 +16,24 @@ import java.time.LocalDateTime;
 public class RaidRecordEntity {
     @GeneratedValue
     @Id
-    private Long recordId;
+    private Long raidRecordId;
     @Column
     private Long userId;
     @Column
     private int score;
-    @Column
-    private LocalDateTime raidStartAt;
+
+    @CreationTimestamp
     @Column
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     @Column
-    private LocalDateTime deletedAt;
+    private LocalDateTime updatedAt;
 
     @Builder
-    public RaidRecordEntity(Long userId, int score) {
+    public RaidRecordEntity(Long userId, int score, Long raidRecordId) {
         this.userId = userId;
         this.score = score;
+        this.raidRecordId = raidRecordId;
     }
 }
