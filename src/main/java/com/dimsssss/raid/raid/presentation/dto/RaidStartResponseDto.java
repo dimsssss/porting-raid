@@ -1,15 +1,10 @@
 package com.dimsssss.raid.raid.presentation.dto;
 
-import com.dimsssss.raid.raid.domain.RaidRecordEntity;
+import lombok.Builder;
 import lombok.Getter;
-
+@Builder
 @Getter
 public class RaidStartResponseDto {
     private Long raidRecordId;
     private boolean canEnter;
-
-    public RaidStartResponseDto(RaidRecordEntity raidRecordEntity) {
-        this.raidRecordId = raidRecordEntity.getRaidRecordId();
-        this.canEnter = true;
-    }
 }

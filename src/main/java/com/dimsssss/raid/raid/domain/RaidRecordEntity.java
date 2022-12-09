@@ -1,5 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
+import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,4 +37,11 @@ public class RaidRecordEntity {
         this.score = score;
         this.raidRecordId = raidRecordId;
     }
+    public RaidStartResponseDto toResponse() {
+        return RaidStartResponseDto.builder()
+                .raidRecordId(this.raidRecordId)
+                .canEnter(true)
+                .build();
+    }
+
 }

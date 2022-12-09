@@ -25,6 +25,6 @@ public class RaidRecordService {
         raidManagement.enterRaid(bossStateEntity, startTime);
 
         RaidRecordEntity result = raidRecordRepository.save(requestDto.convertFrom());
-        return new RaidStartResponseDto(result);
+        return result.toResponse();
     }
 }
