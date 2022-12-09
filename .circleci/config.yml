@@ -12,6 +12,10 @@ jobs:
       - checkout
       - run:
           command: |
+            docker run --name=raid -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_DATABASE=raid -p 6603:3306 -d mysql:latest
+            docker run --name=redis -p 6603:3306 -d redis:latest
+      - run:
+          command: |
             mkdir ./src/main/resources
             touch ./src/main/resources/application.properties
             touch ./gradle/wrapper/gradle-wrapper.properties
@@ -37,7 +41,7 @@ jobs:
 
 
       - run: ./gradlew build
-      - run: ./gradlew test
+
 
 workflows:
   build_and_test:
