@@ -27,6 +27,12 @@ public class RaidRecordEntity {
     @Column
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime raidStartAt;
+
+    @Column
+    private LocalDateTime raidEndAt;
+
     @UpdateTimestamp
     @Column
     private LocalDateTime updatedAt;
@@ -42,6 +48,10 @@ public class RaidRecordEntity {
                 .raidRecordId(this.raidRecordId)
                 .canEnter(true)
                 .build();
+    }
+
+    public void logRaidEndTime(LocalDateTime endTime) {
+        this.raidEndAt = endTime;
     }
 
 }
