@@ -19,6 +19,7 @@ jobs:
             echo "zipStoreBase = ${zipStoreBase}" >> ./gradle/wrapper/gradle-wrapper.properties
             echo "zipStorePath = ${zipStorePath}" >> ./gradle/wrapper/gradle-wrapper.properties
             
+            touch ./src/main/resources/application.properties
             echo "spring.datasource.url = ${spring_datasource_url}" >> ./src/main/resources/application.properties
             echo "spring.datasource.username = ${spring_datasource_username}" >> ./src/main/resources/application.properties
             echo "spring.datasource.password = ${spring_datasource_password}" >> ./src/main/resources/application.properties
