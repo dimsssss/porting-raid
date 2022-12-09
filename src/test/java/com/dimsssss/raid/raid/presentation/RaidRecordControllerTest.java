@@ -19,11 +19,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -81,7 +84,7 @@ class RaidRecordControllerTest {
         Mockito.when(bossStateRepository.findAll()).thenReturn(bossStateEntities);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         doThrow(ObjectOptimisticLockingFailureException.class)
-                .when(bossStateEntity).onRaid();
+                .when(bossStateEntity).enterRaid(any(LocalDateTime.class));
 
         String url = "http://localhost:" + port + "/bossRaid/enter";
 
@@ -102,6 +105,14 @@ class RaidRecordControllerTest {
                 .build();
 
         String url = "http://localhost:" + port + "/bossRaid/end";
+
+        BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
+        Optional<RaidRecordEntity> raidRecordEntity = Optional.ofNullable(RaidRecordEntity.builder()
+                .raidRecordId(1L)
+                .build());
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
+        doNothing().when(bossStateEntity).offRaid();
+        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
 
         mockMvc.perform(patch(url)
                         .contentType(MediaType.APPLICATION_JSON)
