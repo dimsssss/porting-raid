@@ -1,0 +1,6 @@
+version: 2.1
+jobs:
+  my-job:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: medium
