@@ -1,5 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
+import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -26,6 +27,12 @@ public class RaidRecordEntity {
     @Column
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime raidStartAt;
+
+    @Column
+    private LocalDateTime raidEndAt;
+
     @UpdateTimestamp
     @Column
     private LocalDateTime updatedAt;
@@ -36,4 +43,15 @@ public class RaidRecordEntity {
         this.score = score;
         this.raidRecordId = raidRecordId;
     }
+    public RaidStartResponseDto toResponse() {
+        return RaidStartResponseDto.builder()
+                .raidRecordId(this.raidRecordId)
+                .canEnter(true)
+                .build();
+    }
+
+    public void logRaidEndTime(LocalDateTime endTime) {
+        this.raidEndAt = endTime;
+    }
+
 }
