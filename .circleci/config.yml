@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  gradle: circleci/gradle@3.0.0
+
 jobs:
   build:
     machine:
@@ -7,6 +10,14 @@ jobs:
     resource_class: medium
     steps:
       - checkout
+      - run:
+          command: |
+            touch ./gradle/wrapper/gradle-wrapper.properties
+            echo "distributionBase=${distributionBase}" >> ./gradle/wrapper/gradle-wrapper.properties
+            echo "distributionPath=${distributionPath}" >> ./gradle/wrapper/gradle-wrapper.properties
+            echo "distributionUrl=${distributionUrl}" >> ./gradle/wrapper/gradle-wrapper.properties
+            echo "zipStoreBase=${zipStoreBase}" >> ./gradle/wrapper/gradle-wrapper.properties
+            echo "zipStorePath=${zipStorePath}" >> ./gradle/wrapper/gradle-wrapper.properties
       - run: ./gradlew build
 
 workflows:
