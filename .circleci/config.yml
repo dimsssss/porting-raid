@@ -12,14 +12,16 @@ jobs:
       - checkout
       - run:
           command: |
+            touch ./src/main/resources/application.properties
             touch ./gradle/wrapper/gradle-wrapper.properties
+      - run:
+          command: |
             echo "distributionBase = ${distributionBase}" >> ./gradle/wrapper/gradle-wrapper.properties
             echo "distributionPath = ${distributionPath}" >> ./gradle/wrapper/gradle-wrapper.properties
             echo "distributionUrl = ${distributionUrl}" >> ./gradle/wrapper/gradle-wrapper.properties
             echo "zipStoreBase = ${zipStoreBase}" >> ./gradle/wrapper/gradle-wrapper.properties
             echo "zipStorePath = ${zipStorePath}" >> ./gradle/wrapper/gradle-wrapper.properties
             
-            touch ./src/main/resources/application.properties
             echo "spring.datasource.url = ${spring_datasource_url}" >> ./src/main/resources/application.properties
             echo "spring.datasource.username = ${spring_datasource_username}" >> ./src/main/resources/application.properties
             echo "spring.datasource.password = ${spring_datasource_password}" >> ./src/main/resources/application.properties
