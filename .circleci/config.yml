@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run:
           command: |
-            chmod 755 ./src/*
+            mkdir ./src/main/resources
             touch ./src/main/resources/application.properties
             touch ./gradle/wrapper/gradle-wrapper.properties
       - run:
