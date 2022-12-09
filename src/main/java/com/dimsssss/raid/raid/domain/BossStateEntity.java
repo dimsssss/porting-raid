@@ -44,4 +44,38 @@ public class BossStateEntity {
     public void setRaidStartAt(LocalDateTime raidStartAt) {
         this.raidStartAt = raidStartAt;
     }
+
+
+    private boolean isTimeOut(LocalDateTime current) {
+        LocalDateTime latestStartRaidDateTime = this.getRaidStartAt();
+
+        if (latestStartRaidDateTime == null) {
+            return true;
+        }
+
+        int raidTime = this.getRaidingMinute();
+        return current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime));
+    }
+
+    public void enterRaid(LocalDateTime current) {
+        this.onRaid();
+        this.setRaidStartAt(current);
+    }
+
+    public void validateRaidEnter(LocalDateTime current) throws RaidTimeoutException {
+        if (!isTimeOut(current)) {
+            throw new RaidTimeoutException("현재 레이드가 진행중입니다");
+        }
+        if (!isTimeOut(current) && this.isRaiding()) {
+            throw new RaidTimeoutException("현재 레이드가 진행중입니다");
+        }
+    }
+    public void validateRaidEnd(LocalDateTime current, Long userId) throws RaidTimeoutException {
+        if (isTimeOut(current)) {
+            throw new RaidTimeoutException("주어진 레이드 시간이 지났습니다");
+        }
+        if (!this.getLatestRaidUserId().equals(userId)) {
+            throw new IllegalArgumentException("레이드 진행중인 아이디와 종료 아이디가 다릅니다. raidUserId: %s, requestUserId: %s");
+        }
+    }
 }

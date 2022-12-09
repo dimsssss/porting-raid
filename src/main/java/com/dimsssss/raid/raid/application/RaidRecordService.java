@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Service
 public class RaidRecordService {
-    private final RaidManagement raidManagement;
     private final BossStateRepository bossStateRepository;
     private final RaidRecordRepository raidRecordRepository;
 
@@ -22,8 +21,8 @@ public class RaidRecordService {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
         LocalDateTime startTime = LocalDateTime.now();
 
-        raidManagement.validateRaidEnter(bossStateEntity, startTime);
-        raidManagement.enterRaid(bossStateEntity, startTime);
+        bossStateEntity.validateRaidEnter(startTime);
+        bossStateEntity.enterRaid(startTime);
 
         RaidRecordEntity result = raidRecordRepository.save(requestDto.convertFrom());
         return result.toResponse();
@@ -34,9 +33,8 @@ public class RaidRecordService {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
         LocalDateTime endTime = LocalDateTime.now();
 
-        raidManagement.validateRaidEnd(bossStateEntity, endTime, requestDto.getUserId());
-        raidManagement.endRaid(bossStateEntity);
-
+        bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
+        bossStateEntity.offRaid();
         RaidRecordEntity raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId()).orElseThrow(() -> {
             throw new IllegalArgumentException("존재 하지 않는 Record입니다. raidRecordId = " + requestDto.getRaidRecordId());
         });
