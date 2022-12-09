@@ -1,6 +1,7 @@
 package com.dimsssss.raid.raid.application;
 
 import com.dimsssss.raid.raid.domain.*;
+import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class RaidRecordService {
     private final RaidRecordRepository raidRecordRepository;
 
     @Transactional
-    public RaidStartResponseDto startRaid (RaidStartRequestDto requestDto) throws NotCantRaidException {
+    public RaidStartResponseDto startRaid (RaidStartRequestDto requestDto) throws RaidTimeoutException {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
         LocalDateTime startTime = LocalDateTime.now();
 
@@ -26,5 +27,20 @@ public class RaidRecordService {
 
         RaidRecordEntity result = raidRecordRepository.save(requestDto.convertFrom());
         return result.toResponse();
+    }
+
+    @Transactional
+    public void endRaid (RaidEndRequestDto requestDto) throws RaidTimeoutException {
+        BossStateEntity bossStateEntity = bossStateRepository.findBossState();
+        LocalDateTime endTime = LocalDateTime.now();
+
+        raidManagement.validateRaidEnd(bossStateEntity, endTime, requestDto.getUserId());
+        raidManagement.endRaid(bossStateEntity);
+
+        RaidRecordEntity raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId()).orElseThrow(() -> {
+            throw new IllegalArgumentException("존재 하지 않는 Record입니다. raidRecordId = " + requestDto.getRaidRecordId());
+        });
+
+        raidRecordEntity.logRaidEndTime(endTime);
     }
 }
