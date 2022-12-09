@@ -19,6 +19,8 @@ public class BossStateEntity {
     @Column(columnDefinition = "integer default 3")
     private int raidingMinute;
     @Column
+    private Long latestRaidUserId;
+    @Column
     private LocalDateTime raidStartAt;
     @Column
     private LocalDateTime raidEndAt;
