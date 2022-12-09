@@ -2,9 +2,10 @@ package com.dimsssss.raid.raid.presentation.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+
 @Builder
 @Getter
-public class RaidStartResponseDto {
+public class RaidEndRequestDto {
+    private Long userId;
     private Long raidRecordId;
-    private boolean canEnter;
 }
