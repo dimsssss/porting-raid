@@ -39,7 +39,8 @@ jobs:
             echo "spring.redis.port = ${spring_redis_port}" >> ./src/main/resources/application.properties
             echo "spring.redis.host = ${spring_redis_host}" >> ./src/main/resources/application.properties
 
-
+  test:
+    - steps:
       - run: ./gradlew build
 
 
@@ -47,3 +48,4 @@ workflows:
   build_and_test:
     jobs:
       - build
+      - test
