@@ -2,9 +2,7 @@ package com.dimsssss.raid.raid.presentation;
 
 import com.dimsssss.raid.raid.application.RaidRecordService;
 import com.dimsssss.raid.raid.domain.RaidTimeoutException;
-import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
-import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
-import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
+import com.dimsssss.raid.raid.presentation.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -35,6 +33,11 @@ public class RaidRecordController {
         } catch (RaidTimeoutException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
+    }
 
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/bossRaid/topRankerList", method = RequestMethod.GET)
+    public RankingResponseDto getRankers(@RequestBody RankingRequestDto requestDto) {
+        return raidRecordService.getRankigList(requestDto);
     }
 }
