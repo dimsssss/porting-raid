@@ -20,7 +20,7 @@ class RaidRecordRepositoryTest {
 
     @BeforeAll
     void setup() {
-        BossStateEntity bossStateEntity = new BossStateEntity();
+        BossStateEntity bossStateEntity = BossStateEntity.builder().build();
         bossStateRepository.save(bossStateEntity);
     }
 
