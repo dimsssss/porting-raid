@@ -14,7 +14,6 @@ public class RaidStartRequestDto {
         this.userId = userId;
         this.level = level;
     }
-    @Builder
     public RaidRecordEntity convertFrom() {
         return RaidRecordEntity.builder()
                 .userId(this.userId)
