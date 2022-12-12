@@ -46,6 +46,8 @@ class RaidRecordControllerTest {
     BossStateRepository bossStateRepository;
     @MockBean
     RaidRecordRepository raidRecordRepository;
+    @MockBean
+    RankingRepositoryImple rankingRepositoryImple;
 
     @DisplayName("POST /bossRaid/enter 호출 시 응답 값과 201을 반환한다")
     @WithMockUser
@@ -105,14 +107,21 @@ class RaidRecordControllerTest {
                 .build();
 
         String url = "http://localhost:" + port + "/bossRaid/end";
-
+        RankingEntity rankingEntity = RankingEntity.builder()
+                .userId(1L)
+                .totalScore(20)
+                .build();
         BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
         Optional<RaidRecordEntity> raidRecordEntity = Optional.ofNullable(RaidRecordEntity.builder()
                 .raidRecordId(1L)
+                .userId(1L)
+                .score(20)
                 .build());
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         doNothing().when(bossStateEntity).offRaid();
         Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
+        Mockito.when(rankingRepositoryImple.findById(any(Long.class))).thenReturn(rankingEntity);
+        doNothing().when(rankingRepositoryImple).save(rankingEntity);
 
         mockMvc.perform(patch(url)
                         .contentType(MediaType.APPLICATION_JSON)
