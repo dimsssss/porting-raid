@@ -27,7 +27,7 @@ class BossStateRepositoryTest {
     @DisplayName("보스의 상태를 저장할 수 있다")
     @Test
     public void create() {
-        BossStateEntity bossStateEntity = new BossStateEntity();
+        BossStateEntity bossStateEntity = BossStateEntity.builder().build();
         bossStateRepository.save(bossStateEntity);
 
         BossStateEntity result = bossStateRepository.findAll().get(0);
