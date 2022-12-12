@@ -1,5 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,7 +18,7 @@ public class BossStateEntity {
     @Column(columnDefinition = "boolean default false")
     private boolean isRaiding;
     @Column(columnDefinition = "integer default 3")
-    private int raidingMinute;
+    private int raidingMinute = 3;
     @Column
     private Long latestRaidUserId;
     @Column
@@ -33,6 +34,11 @@ public class BossStateEntity {
     @Version
     private Timestamp timestamp;
 
+    @Builder
+    public BossStateEntity() {
+
+    }
+
     public void onRaid() {
         isRaiding = true;
     }
@@ -45,6 +51,9 @@ public class BossStateEntity {
         this.raidStartAt = raidStartAt;
     }
 
+    public void setLatestRaidUserId(Long userId) {
+        this.latestRaidUserId = userId;
+    }
 
     private boolean isTimeOut(LocalDateTime current) {
         LocalDateTime latestStartRaidDateTime = this.getRaidStartAt();

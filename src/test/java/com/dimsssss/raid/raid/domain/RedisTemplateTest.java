@@ -5,8 +5,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -17,6 +21,9 @@ class RedisTemplateTest {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     @BeforeAll
     void setup() {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -25,12 +32,14 @@ class RedisTemplateTest {
 
     @AfterAll
     void clean() {
-        redisTemplate.delete("how");
+        stringRedisTemplate.getConnectionFactory().getConnection().flushAll();
     }
 
     @Test
     public void save() {
-        boolean isCreated = redisTemplate.opsForZSet().addIfAbsent("how", "hohoho", 1.0);
+        boolean isCreated = stringRedisTemplate.opsForZSet().addIfAbsent("leaderboard", "kk", 10.0);
         assertThat(isCreated).isTrue();
+
+        Set<ZSetOperations.TypedTuple<String>> result = stringRedisTemplate.opsForZSet().reverseRangeWithScores("leaderboard", 0, -1);
     }
 }

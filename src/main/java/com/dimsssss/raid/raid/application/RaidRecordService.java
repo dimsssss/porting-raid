@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class RaidRecordService {
     private final BossStateRepository bossStateRepository;
     private final RaidRecordRepository raidRecordRepository;
+    private final RankingRepositoryImple rankingRepositoryImple;
 
     @Transactional
     public RaidStartResponseDto startRaid (RaidStartRequestDto requestDto) throws RaidTimeoutException {
@@ -40,5 +41,15 @@ public class RaidRecordService {
         });
 
         raidRecordEntity.logRaidEndTime(endTime);
+        RankingEntity rankingEntity = rankingRepositoryImple.findById(raidRecordEntity.getUserId());
+
+        if (rankingEntity == null) {
+            rankingEntity.setTotalScore(raidRecordEntity.getScore());
+            rankingRepositoryImple.save(rankingEntity);
+            return;
+        }
+
+        rankingEntity.accumulateTotalScore(raidRecordEntity.getScore());
+        rankingRepositoryImple.save(rankingEntity);
     }
 }
