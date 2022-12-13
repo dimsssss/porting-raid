@@ -45,4 +45,10 @@ public class RaidRecordService {
     public RankingResponseDto getRankigList(RankingRequestDto requestDto) {
         return rankingRepositoryImple.getTopTankingAndMyRanking(requestDto.getUserId());
     }
+
+    public BossStateResponseDto getBossState() throws RaidTimeoutException {
+        BossStateEntity bossStateEntity = bossStateRepository.findBossState();
+        bossStateEntity.validateRaidEnter(LocalDateTime.now());
+        return bossStateEntity.toBossStateResponseDto(true);
+    }
 }
