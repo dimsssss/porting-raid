@@ -29,8 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
@@ -42,12 +41,14 @@ class RaidRecordControllerTest {
     private int port;
     @Autowired
     private MockMvc mockMvc;
+
     @MockBean
     BossStateRepository bossStateRepository;
     @MockBean
     RaidRecordRepository raidRecordRepository;
     @MockBean
     RankingRepositoryImple rankingRepositoryImple;
+
 
     @DisplayName("POST /bossRaid/enter 호출 시 응답 값과 201을 반환한다")
     @WithMockUser
@@ -127,5 +128,33 @@ class RaidRecordControllerTest {
                         .content(new ObjectMapper().writeValueAsString(requestDto))
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("GET /bossRaid : 레이드가 가능하면 응답 값과 http status 200 반환")
+    @WithMockUser
+    @Test
+    public void getBossState () throws Exception {
+        String url = "http://localhost:" + port + "/bossRaid";
+        BossStateEntity bossStateEntity = new BossStateEntity();
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
+        mockMvc.perform(get(url).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.canEnter", is(true)))
+                .andExpect(jsonPath("$.enteredUserId", is(nullValue())));
+    }
+
+    @DisplayName("GET /bossRaid : 레이드가 불가능하면 응답 값과 http status 400 반환")
+    @WithMockUser
+    @Test
+    public void getBossState_fail_when_raiding () throws Exception {
+        String url = "http://localhost:" + port + "/bossRaid";
+        BossStateEntity bossStateEntity = new BossStateEntity();
+        bossStateEntity.setLatestRaidUserId(1L);
+        bossStateEntity.onRaid();
+        bossStateEntity.setRaidStartAt(LocalDateTime.now());
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
+        mockMvc.perform(get(url).with(csrf()))
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().reason(containsString("현재 레이드가 진행중입니다")));
     }
 }

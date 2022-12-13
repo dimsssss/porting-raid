@@ -1,6 +1,7 @@
 package com.dimsssss.raid.raid.application;
 
 import com.dimsssss.raid.raid.domain.*;
+import com.dimsssss.raid.raid.presentation.dto.BossStateResponseDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
@@ -123,5 +124,23 @@ class RaidRecordServiceTest {
         assertThatThrownBy(() -> raidRecordService.endRaid(otherRequestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("레이드 진행중인 아이디와 종료 아이디가 다릅니다. raidUserId: %s, requestUserId: %s");
+    }
+
+    @DisplayName("현재 레이드가 진행중일 경우 예외 처리한다")
+    @Test
+    void getBossState_not_cant_enter() {
+        bossStateEntity.setRaidStartAt(LocalDateTime.now());
+        bossStateEntity.onRaid();
+        assertThatThrownBy(() -> raidRecordService.getBossState())
+                .isInstanceOf(RaidTimeoutException.class)
+                .hasMessage("현재 레이드가 진행중입니다");
+    }
+
+    @DisplayName("현재 레이드가 가능할 때 enteredUserId, canEnter 값을 반환한다")
+    @Test
+    void getBossState_can_enter() throws Exception {
+        BossStateResponseDto bossStateResponseDto = raidRecordService.getBossState();
+        assertThat(bossStateResponseDto.isCanEnter()).isTrue();
+        assertThat(bossStateResponseDto.getEnteredUserId()).isEqualTo(1L);
     }
 }

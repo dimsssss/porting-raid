@@ -1,5 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
+import com.dimsssss.raid.raid.presentation.dto.BossStateResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,9 +36,7 @@ public class BossStateEntity {
     private Timestamp timestamp;
 
     @Builder
-    public BossStateEntity() {
-
-    }
+    public BossStateEntity() {}
 
     public void onRaid() {
         isRaiding = true;
@@ -86,5 +85,12 @@ public class BossStateEntity {
         if (!this.getLatestRaidUserId().equals(userId)) {
             throw new IllegalArgumentException("레이드 진행중인 아이디와 종료 아이디가 다릅니다. raidUserId: %s, requestUserId: %s");
         }
+    }
+
+    public BossStateResponseDto toBossStateResponseDto(boolean canEnter) {
+        return BossStateResponseDto.builder()
+                .canEnter(canEnter)
+                .enteredUserId(this.latestRaidUserId)
+                .build();
     }
 }
