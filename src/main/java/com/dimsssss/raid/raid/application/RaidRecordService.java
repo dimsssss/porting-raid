@@ -41,4 +41,8 @@ public class RaidRecordService {
         raidRecordEntity.logRaidEndTime(endTime);
         rankingRepositoryImple.save(raidRecordEntity);
     }
+
+    public RankingResponseDto getRankigList(RankingRequestDto requestDto) {
+        return rankingRepositoryImple.getTopTankingAndMyRanking(requestDto.getUserId());
+    }
 }
