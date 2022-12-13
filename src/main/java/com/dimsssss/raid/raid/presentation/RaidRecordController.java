@@ -40,4 +40,15 @@ public class RaidRecordController {
     public RankingResponseDto getRankers(@RequestBody RankingRequestDto requestDto) {
         return raidRecordService.getRankigList(requestDto);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/bossRaid")
+    public BossStateResponseDto getBossState() {
+        try {
+            BossStateResponseDto bossStateResponseDto = raidRecordService.getBossState();
+            return bossStateResponseDto;
+        } catch (RaidTimeoutException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+        }
+    }
 }
