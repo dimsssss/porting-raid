@@ -112,16 +112,15 @@ class RaidRecordControllerTest {
                 .totalScore(20)
                 .build();
         BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
-        Optional<RaidRecordEntity> raidRecordEntity = Optional.ofNullable(RaidRecordEntity.builder()
+        RaidRecordEntity raidRecordEntity = RaidRecordEntity.builder()
                 .raidRecordId(1L)
                 .userId(1L)
                 .score(20)
-                .build());
+                .build();
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         doNothing().when(bossStateEntity).offRaid();
-        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
-        Mockito.when(rankingRepositoryImple.findById(any(Long.class))).thenReturn(rankingEntity);
-        doNothing().when(rankingRepositoryImple).save(rankingEntity);
+        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(Optional.ofNullable(raidRecordEntity));
+        doNothing().when(rankingRepositoryImple).save(raidRecordEntity);
 
         mockMvc.perform(patch(url)
                         .contentType(MediaType.APPLICATION_JSON)

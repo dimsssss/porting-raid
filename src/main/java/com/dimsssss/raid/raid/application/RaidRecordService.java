@@ -1,9 +1,7 @@
 package com.dimsssss.raid.raid.application;
 
 import com.dimsssss.raid.raid.domain.*;
-import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
-import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
-import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
+import com.dimsssss.raid.raid.presentation.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,15 +39,10 @@ public class RaidRecordService {
         });
 
         raidRecordEntity.logRaidEndTime(endTime);
-        RankingEntity rankingEntity = rankingRepositoryImple.findById(raidRecordEntity.getUserId());
+        rankingRepositoryImple.save(raidRecordEntity);
+    }
 
-        if (rankingEntity == null) {
-            rankingEntity.setTotalScore(raidRecordEntity.getScore());
-            rankingRepositoryImple.save(rankingEntity);
-            return;
-        }
-
-        rankingEntity.accumulateTotalScore(raidRecordEntity.getScore());
-        rankingRepositoryImple.save(rankingEntity);
+    public RankingResponseDto getRankigList(RankingRequestDto requestDto) {
+        return rankingRepositoryImple.getTopTankingAndMyRanking(requestDto.getUserId());
     }
 }
