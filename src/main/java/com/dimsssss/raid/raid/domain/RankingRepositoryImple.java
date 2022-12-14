@@ -20,7 +20,7 @@ public class RankingRepositoryImple {
     private final StringRedisTemplate stringRedisTemplate;
     private static final String KEY = "leaderboard";
 
-    private int getPrevScore(Long userId) {
+    public int getPrevScore(Long userId) {
         Set<ZSetOperations.TypedTuple<String>> tuples = getAllScores();
 
         for (ZSetOperations.TypedTuple<String> stringTypedTuple: tuples) {
