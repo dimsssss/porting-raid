@@ -1,14 +1,11 @@
 package com.dimsssss.raid.raid.domain;
 
 import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
+import com.dimsssss.raid.user.domain.RaidHistory;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,24 +15,16 @@ public class RaidRecordEntity {
     @GeneratedValue
     @Id
     private Long raidRecordId;
-    @Column
+    @Column(name = "user_id")
     private Long userId;
     @Column
     private int score;
 
     @CreationTimestamp
-    @Column
-    private LocalDateTime createdAt;
-
-    @Column
+    @Column(name = "raid_start_at")
     private LocalDateTime raidStartAt;
-
-    @Column
+    @Column(name = "raid_end_at")
     private LocalDateTime raidEndAt;
-
-    @UpdateTimestamp
-    @Column
-    private LocalDateTime updatedAt;
 
     @Builder
     public RaidRecordEntity(Long userId, int score, Long raidRecordId) {
@@ -52,6 +41,15 @@ public class RaidRecordEntity {
 
     public void logRaidEndTime(LocalDateTime endTime) {
         this.raidEndAt = endTime;
+    }
+
+    public RaidHistory toRaidHistory() {
+        return RaidHistory.builder()
+                .raidRecordId(this.raidRecordId)
+                .enterTime(this.raidStartAt)
+                .endTime(this.raidEndAt)
+                .score(this.score)
+                .build();
     }
 
 }
