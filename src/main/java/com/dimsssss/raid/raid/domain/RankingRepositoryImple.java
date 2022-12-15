@@ -1,6 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.RankingResponseDto;
+import com.dimsssss.raid.raid.domain.dto.RankingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -20,7 +20,7 @@ public class RankingRepositoryImple {
     private final StringRedisTemplate stringRedisTemplate;
     private static final String KEY = "leaderboard";
 
-    private int getPrevScore(Long userId) {
+    public int getPrevScore(Long userId) {
         Set<ZSetOperations.TypedTuple<String>> tuples = getAllScores();
 
         for (ZSetOperations.TypedTuple<String> stringTypedTuple: tuples) {

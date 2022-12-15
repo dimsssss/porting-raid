@@ -1,4 +1,4 @@
-package com.dimsssss.raid.raid.presentation.dto;
+package com.dimsssss.raid.raid.domain.dto;
 
 import com.dimsssss.raid.raid.domain.RankingEntity;
 import lombok.Getter;
