@@ -1,6 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.RankingResponseDto;
+import com.dimsssss.raid.raid.domain.dto.RankingResponseDto;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

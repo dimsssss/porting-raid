@@ -1,10 +1,10 @@
 package com.dimsssss.raid.raid.application;
 
 import com.dimsssss.raid.raid.domain.*;
-import com.dimsssss.raid.raid.presentation.dto.BossStateResponseDto;
+import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
-import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
+import com.dimsssss.raid.raid.domain.dto.RaidStartResponseDto;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
