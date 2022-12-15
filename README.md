@@ -4,7 +4,7 @@
 
 ## 보완한 점
 
-### 랭킹 조회
+## 랭킹 조회
 
 기존에 작업한 프로젝트에서는 ranking을 조회하는 방식은 아래와 같다.
 
@@ -16,10 +16,9 @@
 
 ### sorted set
 
-> A Redis sorted set is a collection of unique strings (members) ordered by an associated score. When more than one string has the same score, the strings are ordered lexicographically. Some use cases for sorted sets include:
-
-Leaderboards. For example, you can use sorted sets to easily maintain ordered lists of the highest scores in a massive online game.
+> A Redis sorted set is a collection of unique strings (members) ordered by an associated score. When more than one string has the same score, the strings are ordered lexicographically. Some use cases for sorted sets include: Leaderboards. For example, you can use sorted sets to easily maintain ordered lists of the highest scores in a massive online game.
 Rate limiters. In particular, you can use a sorted set to build a sliding-window rate limiter to prevent excessive API requests.
+
 
 가장 최근 점수에 score를 더한 값으로 저장하기 때문에 따로 합계를 구할 필요도 없으며 score를 기준으로 정렬되기 때문에 rank도 자동으로 구할 수 있다.
 
@@ -34,12 +33,31 @@ in-memory의 특성상 시스템에 장애가 생기면 저장한 모든 데이�
 - redis의 persistance 기능을 사용한다. 이 기능에도 4가지 모드가 있지만 근본적으로 disk를 이용한다
 - 기획을 변경한다. 예를 들어 회원 전체의 rank가 필요하지 않을 수 있다. 사용자 화면의 한페이지 정도의 rank 정보만 필요하다면 redis 뿐만 아니라 RDBMS도 사용 가능한 옵션이 된다.
 
-## 결론
+### 결론
 
 in-memory와 RDBMS 모두 장단점이 있어서 어떤 것을 선택해야할지는 사용하는 환경을 분석해야한다.
+
+## Mock
+
+이전 프로젝트에서 Mock을 활용하지 않았다. Mock이 꼭 필요할까? 라는 생각이 들었고 통합테스트, 단위테스트, e2e 테스트에 mock을 사용하지 않았다.
+나중에 외부시스템의 API Key에 대한 이슈가 발생하면서 이번 프로젝트에서는 외부 시스템에 의존하는 코드는 Mock을 적극적으로 활용하였다
+
+### 기대효과
+
+외부 시스템에 대한 의존이 없어져서 코드를 변경하지 않아도 테스트 코드가 깨지는 상황을 막을 수 있다. 또한 테스트 코드가 많아질수록 지연 시간이 늘어나는데 Mock을 사용하면서 시간을 단축할 수 있다
+
+### 단점
+
+테스트하려는 대상과 관련된 의존성(외부시스템 제외)에도 Mock을 적용하면 세부 사항에 초점을 맞추게 된다.  다른 말로 하나가 변경되어 테스트 코드가 깨지면 기능이 실패하는 것으로 간주된다. 이것은 리팩터링을 하는데 부담이된다.
+
+### 결론
+
+장기적인 관점을 위해 외부시스템에 대한 코드만 Mock으로 처리하는 것이 바람직해보인다.
 
 ## 참고 자료
 
 [sorted set](https://redis.io/docs/data-types/sorted-sets/)
 
 [redis persistance](https://redis.io/docs/management/persistence/)
+
+[단위 테스트](https://product.kyobobook.co.kr/detail/S000001805070)
