@@ -1,6 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.BossStateResponseDto;
+import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;

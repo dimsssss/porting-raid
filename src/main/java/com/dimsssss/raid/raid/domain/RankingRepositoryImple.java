@@ -1,6 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.RankingResponseDto;
+import com.dimsssss.raid.raid.domain.dto.RankingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;

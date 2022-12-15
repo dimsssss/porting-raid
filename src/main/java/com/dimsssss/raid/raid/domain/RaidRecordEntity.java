@@ -1,6 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
-import com.dimsssss.raid.raid.presentation.dto.RaidStartResponseDto;
+import com.dimsssss.raid.raid.domain.dto.RaidStartResponseDto;
 import com.dimsssss.raid.user.domain.RaidHistory;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
