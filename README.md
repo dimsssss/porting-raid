@@ -1,1 +1,45 @@
 # porting-raid
+
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/dimsssss/porting-raid/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/dimsssss/porting-raid/tree/main)
+
+## 보완한 점
+
+### 랭킹 조회
+
+기존에 작업한 프로젝트에서는 ranking을 조회하는 방식은 아래와 같다.
+
+1. raid 로그를 데이터베이스에 저장한다.
+2. 저장된 로그 기록을 유저별로 합계를 낸다
+
+이와 같은 방법은 로그 전체를 전부 확인해야하기 때문에 데이터가 많아질수록 연산하는 작업도 늘어난다.
+이것을 해결하기 위해 redis의 sorted set을 이용하였다.
+
+### sorted set
+
+> A Redis sorted set is a collection of unique strings (members) ordered by an associated score. When more than one string has the same score, the strings are ordered lexicographically. Some use cases for sorted sets include:
+
+Leaderboards. For example, you can use sorted sets to easily maintain ordered lists of the highest scores in a massive online game.
+Rate limiters. In particular, you can use a sorted set to build a sliding-window rate limiter to prevent excessive API requests.
+
+가장 최근 점수에 score를 더한 값으로 저장하기 때문에 따로 합계를 구할 필요도 없으며 score를 기준으로 정렬되기 때문에 rank도 자동으로 구할 수 있다.
+
+### 기대 효과
+데이터베이스의 작업을 줄여줄 수 있다. disk를 사용하는 RDBMS 특성상 데이터가 많아지면 속도가 느려진다. raid를 진행한 모든 유저의 rank를 구해야하기 때문에 index를 사용할 수도 없다. redis는 in-memory 저장소라서 rdbms보다 속도가 빠르고 sorted set 대부분 연산은 O(lgn)으로 빠르다.
+
+이전 프로젝트에서는 rank를 구하는 작업을 RDBMS에서 처리했기 때문에 조회 쿼리가 복잡해졌고 Model쪽의 코드가 복잡해졌다. redis를 이용할 때 제공해주는 API로 구현 가능하기 때문에 코드가 훨씬 간결하다. 
+
+### 단점
+in-memory의 특성상 시스템에 장애가 생기면 저장한 모든 데이터가 사라지게 된다. 이에 대한 대비책으로는 두 가지 방법이 있다.
+
+- redis의 persistance 기능을 사용한다. 이 기능에도 4가지 모드가 있지만 근본적으로 disk를 이용한다
+- 기획을 변경한다. 예를 들어 회원 전체의 rank가 필요하지 않을 수 있다. 사용자 화면의 한페이지 정도의 rank 정보만 필요하다면 redis 뿐만 아니라 RDBMS도 사용 가능한 옵션이 된다.
+
+## 결론
+
+in-memory와 RDBMS 모두 장단점이 있어서 어떤 것을 선택해야할지는 사용하는 환경을 분석해야한다.
+
+## 참고 자료
+
+[sorted set](https://redis.io/docs/data-types/sorted-sets/)
+
+[redis persistance](https://redis.io/docs/management/persistence/)
