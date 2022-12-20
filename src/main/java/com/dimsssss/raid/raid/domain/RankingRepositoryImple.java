@@ -42,7 +42,7 @@ public class RankingRepositoryImple {
         return stringRedisTemplate.opsForZSet().reverseRangeWithScores(KEY, 0, -1);
     }
 
-    private List<RankingEntity> getRankAtAllScores(Set<ZSetOperations.TypedTuple<String>> scores) {
+    private List<RankingEntity> getAllRankWithScores(Set<ZSetOperations.TypedTuple<String>> scores) {
         int rank = 0;
         Iterator iterator = scores.iterator();
         List<RankingEntity> rankers = new ArrayList<>();
