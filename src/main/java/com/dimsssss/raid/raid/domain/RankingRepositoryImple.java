@@ -20,20 +20,25 @@ public class RankingRepositoryImple {
     private final StringRedisTemplate stringRedisTemplate;
     private static final String KEY = "leaderboard";
 
-    public int getPrevScore(Long userId) {
+    public Optional<Integer> getPrevScore(Long userId) {
         Set<ZSetOperations.TypedTuple<String>> tuples = getAllScores();
 
         for (ZSetOperations.TypedTuple<String> stringTypedTuple: tuples) {
             if (parseLong(stringTypedTuple.getValue()) == userId) {
-                return stringTypedTuple.getScore().intValue();
+                return Optional.ofNullable(stringTypedTuple.getScore().intValue());
             }
         }
-        return 0;
+        return Optional.empty();
     }
 
     public void save(RaidRecordEntity raidRecordEntity) {
-        int prevScore = getPrevScore(raidRecordEntity.getUserId());
-        int totalScore = prevScore + raidRecordEntity.getScore();
+        Optional<Integer> prevScore = getPrevScore(raidRecordEntity.getUserId());
+        int totalScore = 0;
+
+        if (prevScore.isPresent()) {
+            totalScore = prevScore.get() + raidRecordEntity.getScore();
+        }
+
         String userId = raidRecordEntity.getUserId().toString();
         stringRedisTemplate.opsForZSet().addIfAbsent(KEY, userId, totalScore);
     }
