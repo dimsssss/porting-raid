@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 public class UserInformationResponseDto {
-    private int totalScore;
+    private Integer totalScore;
     private List<RaidHistory> bossRaidHistory;
 
-    public UserInformationResponseDto(int totalScore, List<RaidHistory> bossRaidHistory) {
+    public UserInformationResponseDto(Integer totalScore, List<RaidHistory> bossRaidHistory) {
         this.totalScore = totalScore;
         this.bossRaidHistory = bossRaidHistory;
     }
