@@ -63,12 +63,10 @@ public class RankingRepositoryImple {
     }
 
     private RankingEntity getMyRank(List<RankingEntity> rankers, Long userId) {
-        for (RankingEntity rank: rankers) {
-            if (rank.getUserId() == userId) {
-                return rank;
-            }
-        }
-        return null;
+        return rankers.stream()
+                .filter(ranker -> ranker.getUserId() == userId)
+                .findFirst()
+                .orElse(null);
     }
 
     public RankingResponseDto getTopTankingAndMyRanking(Long userId) {
