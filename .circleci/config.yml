@@ -40,7 +40,7 @@ jobs:
             echo "spring.redis.host = ${spring_redis_host}" >> ./src/main/resources/application.properties
 
       - run: ./gradlew clean
-      - run: ./gradlew build --no-build-cache --debug
+      - run: ./gradlew build --no-build-cache --info
       - run: ./gradlew test
 
 workflows:
