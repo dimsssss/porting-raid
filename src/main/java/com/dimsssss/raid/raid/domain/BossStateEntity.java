@@ -89,13 +89,15 @@ public class BossStateEntity {
     }
 
     private boolean isTimeOut(LocalDateTime current) {
+        System.out.println("current = " + current);
         LocalDateTime latestStartRaidDateTime = this.getRaidStartAt();
-
+        System.out.println("latestStartRaidDateTime = " + latestStartRaidDateTime);
         if (latestStartRaidDateTime == null) {
             return true;
         }
 
         int raidTime = this.getRaidingMinute();
+        System.out.println("current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime)) = " + current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime)));
         return current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime));
     }
 
