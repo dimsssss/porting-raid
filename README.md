@@ -60,6 +60,12 @@ null, Optional, 오류 반환이 있는데 java에서 지원하는 Optional을 �
 
 https://dimsss.notion.site/6-455428654030423d9fb48dd469f61e94
 
+## Immutable
+코드의 오용을 막기 위해서 의도치 않게 데이터가 변경되는 상황을 막기 위해서 불변 객체를 사용한다.
+이와 대조적으로 변경 가능한 객체를 가변 객체라고 하는데 사용하던 객체가 의도치 않게 변경될 수 있다. 이런 동작을 가능하게 하는 요인 가운데 하나가 setter 메서드인데 기존에 작성한 setter 메서드를 지우고 불변 객체를 사용하도록 코드를 변경하였다
+
+https://dimsss.notion.site/7-1-250beafd08c4486b859c2cc7dda6c61d
+
 ## 참고 자료
 
 [sorted set](https://redis.io/docs/data-types/sorted-sets/)

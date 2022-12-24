@@ -49,7 +49,7 @@ public class RaidRecordService {
         rankingRepositoryImple.save(raidRecordEntity.get());
     }
 
-    public RankingResponseDto getRankigList(RankingRequestDto requestDto) {
+    public RankingResponseDto getRankingList(RankingRequestDto requestDto) {
         return rankingRepositoryImple.getTopRankingAndMyRanking(requestDto.getUserId());
     }
 
