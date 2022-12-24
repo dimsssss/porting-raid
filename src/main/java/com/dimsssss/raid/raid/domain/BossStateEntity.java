@@ -51,7 +51,7 @@ public class BossStateEntity {
         this.timestamp = timestamp;
     }
 
-    public BossStateEntity withEndRaid(boolean isRaiding) {
+    public BossStateEntity withRaidingState(boolean isRaiding) {
         return new BossStateEntity(
                 bossStateId,
                 isRaiding,
