@@ -86,7 +86,7 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간이 종료되면 새로운 raid 가 가능하다")
     @Test
     void startRaid_success_when_time_out() throws RaidTimeoutException {
-        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 24, 20, 20);
+        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 23, 20, 20);
         bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, raidStartTime);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
 
