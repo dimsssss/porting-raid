@@ -118,7 +118,7 @@ class RaidRecordControllerTest {
                 .userId(1L)
                 .score(20)
                 .build();
-        Mockito.when(bossStateRepository.getReferenceById(requestDto.getBossStateId())).thenReturn(bossStateEntity);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         Mockito.when(raidRecordRepository.getReferenceById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
         doNothing().when(rankingRepositoryImple).save(raidRecordEntity);
 

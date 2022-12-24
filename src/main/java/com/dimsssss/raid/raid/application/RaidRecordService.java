@@ -32,7 +32,7 @@ public class RaidRecordService {
 
     @Transactional
     public void endRaid (RaidEndRequestDto requestDto) throws RaidTimeoutException {
-        BossStateEntity bossStateEntity = bossStateRepository.getReferenceById(requestDto.getBossStateId());
+        BossStateEntity bossStateEntity = bossStateRepository.findBossState();
         LocalDateTime endTime = LocalDateTime.now();
 
         bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
