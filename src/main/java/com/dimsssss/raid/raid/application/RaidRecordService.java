@@ -25,8 +25,8 @@ public class RaidRecordService {
         LocalDateTime startTime = LocalDateTime.now();
 
         bossStateEntity.validateRaidEnter(startTime);
-        bossStateEntity.enterRaid(startTime);
 
+        bossStateRepository.save(bossStateEntity.withRaidingStateAndStartTime(true, startTime));
         RaidRecordEntity result = raidRecordRepository.save(requestDto.convertFrom());
         return result.toResponse();
     }

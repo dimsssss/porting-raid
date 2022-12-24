@@ -1,7 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
 import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
-import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -35,7 +34,6 @@ public class BossStateEntity {
     @Version
     private Timestamp timestamp;
 
-    @Builder
     public BossStateEntity() {}
 
     private BossStateEntity(Long bossStateId, boolean isRaiding, int raidingMinute, Long latestRaidUserId, LocalDateTime raidStartAt,
@@ -64,16 +62,30 @@ public class BossStateEntity {
                 timestamp);
     }
 
-    public void onRaid() {
-        isRaiding = true;
+    public BossStateEntity withRaidingStateAndStartTime(boolean isRaiding, LocalDateTime startTime) {
+        return new BossStateEntity(
+                bossStateId,
+                isRaiding,
+                raidingMinute,
+                latestRaidUserId,
+                startTime,
+                raidEndAt,
+                createdAt,
+                deletedAt,
+                timestamp);
     }
 
-    public void setRaidStartAt(LocalDateTime raidStartAt) {
-        this.raidStartAt = raidStartAt;
-    }
-
-    public void setLatestRaidUserId(Long userId) {
-        this.latestRaidUserId = userId;
+    public BossStateEntity withUserId(Long userId) {
+        return new BossStateEntity(
+                bossStateId,
+                isRaiding,
+                raidingMinute,
+                userId,
+                raidStartAt,
+                raidEndAt,
+                createdAt,
+                deletedAt,
+                timestamp);
     }
 
     private boolean isTimeOut(LocalDateTime current) {
@@ -85,11 +97,6 @@ public class BossStateEntity {
 
         int raidTime = this.getRaidingMinute();
         return current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime));
-    }
-
-    public void enterRaid(LocalDateTime current) {
-        this.onRaid();
-        this.setRaidStartAt(current);
     }
 
     public void validateRaidEnter(LocalDateTime current) throws RaidTimeoutException {

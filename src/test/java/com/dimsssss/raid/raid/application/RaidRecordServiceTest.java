@@ -33,13 +33,13 @@ class RaidRecordServiceTest {
     @MockBean
     RaidRecordRepository raidRecordRepository;
 
-    private RaidStartRequestDto requestDto;
+    RaidStartRequestDto requestDto;
 
-    private BossStateEntity bossStateEntity;
+    BossStateEntity bossStateEntity;
 
-    private RaidRecordEntity raidRecordEntity;
+    RaidRecordEntity raidRecordEntity;
 
-    private RaidEndRequestDto raidEndRequestDto;
+    RaidEndRequestDto raidEndRequestDto;
 
     @BeforeEach
     void setup() {
@@ -47,8 +47,7 @@ class RaidRecordServiceTest {
                 .userId(1L)
                 .level(3)
                 .build();
-        bossStateEntity = BossStateEntity.builder().build();
-        bossStateEntity.setLatestRaidUserId(1L);
+
         raidRecordEntity = RaidRecordEntity.builder()
                 .raidRecordId(1L)
                 .userId(1L)
@@ -60,15 +59,14 @@ class RaidRecordServiceTest {
                 .userId(1L)
                 .bossStateId(1L)
                 .build();
-
-        Mockito.when(bossStateRepository.getReferenceById(1L)).thenReturn(bossStateEntity);
-        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         Mockito.when(raidRecordRepository.save(any(RaidRecordEntity.class))).thenReturn(raidRecordEntity);
     }
 
     @Test
     @DisplayName("시작 시간이 없고 진행중인 레이드가 없다면 레이드가 가능하다")
     void startRaid() throws RaidTimeoutException {
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(false, null);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         RaidStartResponseDto responseDto = raidRecordService.startRaid(requestDto);
 
         assertThat(responseDto.getRaidRecordId()).isEqualTo(1L);
@@ -78,9 +76,8 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간 내에 다른 raid 시작 요청이 오면 예외를 반환한다")
     @Test
     void startRaid_fail_when_raid_on() {
-        bossStateEntity.enterRaid(LocalDateTime.now());
-        bossStateEntity.onRaid();
-
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now());
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         assertThatThrownBy(() -> raidRecordService.startRaid(requestDto))
                 .isInstanceOf(RaidTimeoutException.class)
                 .hasMessage("현재 레이드가 진행중입니다");
@@ -89,8 +86,9 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간이 종료되면 새로운 raid 가 가능하다")
     @Test
     void startRaid_success_when_time_out() throws RaidTimeoutException {
-        bossStateEntity.enterRaid(LocalDateTime.of(2022, 12, 11, 1,1,1));
-        bossStateEntity.onRaid();
+        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 24, 20, 20);
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, raidStartTime);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
 
         RaidStartResponseDto responseDto = raidRecordService.startRaid(requestDto);
 
@@ -107,7 +105,9 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간이 남지 않았을 때 종료 요청이 오면 예외를 반환한다")
     @Test
     void endRaid_fail_when_time_out() {
-        bossStateEntity.enterRaid(LocalDateTime.of(2022, 12, 11, 1,1,1));
+        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 24, 20, 20);
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(false, raidStartTime);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         assertThatThrownBy(() -> raidRecordService.endRaid(raidEndRequestDto))
                 .isInstanceOf(RaidTimeoutException.class)
                 .hasMessage("주어진 레이드 시간이 지났습니다");
@@ -116,23 +116,25 @@ class RaidRecordServiceTest {
     @DisplayName("raid 종료 요청자와 raid 진행중인 사용자가 다르면 예외를 반환한다")
     @Test
     void endRaid_fail_when_raider_not_be_requester() {
-        bossStateEntity.setRaidStartAt(LocalDateTime.now());
         RaidEndRequestDto otherRequestDto = RaidEndRequestDto.builder()
                 .raidRecordId(1L)
                 .userId(2L)
                 .bossStateId(1L)
                 .build();
 
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now()).withUserId(1L);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
+
         assertThatThrownBy(() -> raidRecordService.endRaid(otherRequestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("레이드 진행중인 아이디와 종료 아이디가 다릅니다. raidUserId: %s, requestUserId: %s");
     }
 
-    @DisplayName("현재 레이드가 진행중일 경우 예외 처리한다")
+    @DisplayName("현재 레이드가 진행중일 경우 예외를 반환한다")
     @Test
     void getBossState_not_cant_enter() {
-        bossStateEntity.setRaidStartAt(LocalDateTime.now());
-        bossStateEntity.onRaid();
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now());
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         assertThatThrownBy(() -> raidRecordService.getBossState())
                 .isInstanceOf(RaidTimeoutException.class)
                 .hasMessage("현재 레이드가 진행중입니다");
@@ -141,6 +143,8 @@ class RaidRecordServiceTest {
     @DisplayName("현재 레이드가 가능할 때 enteredUserId, canEnter 값을 반환한다")
     @Test
     void getBossState_can_enter() throws Exception {
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(false, null).withUserId(1L);
+        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         BossStateResponseDto bossStateResponseDto = raidRecordService.getBossState();
         assertThat(bossStateResponseDto.isCanEnter()).isTrue();
         assertThat(bossStateResponseDto.getEnteredUserId()).isEqualTo(1L);
