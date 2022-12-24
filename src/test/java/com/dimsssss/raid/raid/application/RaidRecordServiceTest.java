@@ -33,13 +33,13 @@ class RaidRecordServiceTest {
     @MockBean
     RaidRecordRepository raidRecordRepository;
 
-    private RaidStartRequestDto requestDto;
+    RaidStartRequestDto requestDto;
 
-    private BossStateEntity bossStateEntity;
+    BossStateEntity bossStateEntity;
 
-    private RaidRecordEntity raidRecordEntity;
+    RaidRecordEntity raidRecordEntity;
 
-    private RaidEndRequestDto raidEndRequestDto;
+    RaidEndRequestDto raidEndRequestDto;
 
     @BeforeEach
     void setup() {
@@ -47,8 +47,7 @@ class RaidRecordServiceTest {
                 .userId(1L)
                 .level(3)
                 .build();
-        bossStateEntity = BossStateEntity.builder().build();
-        bossStateEntity.setLatestRaidUserId(1L);
+
         raidRecordEntity = RaidRecordEntity.builder()
                 .raidRecordId(1L)
                 .userId(1L)
@@ -60,9 +59,6 @@ class RaidRecordServiceTest {
                 .userId(1L)
                 .bossStateId(1L)
                 .build();
-
-        Mockito.when(bossStateRepository.getReferenceById(1L)).thenReturn(bossStateEntity);
-        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         Mockito.when(raidRecordRepository.save(any(RaidRecordEntity.class))).thenReturn(raidRecordEntity);
     }
 
