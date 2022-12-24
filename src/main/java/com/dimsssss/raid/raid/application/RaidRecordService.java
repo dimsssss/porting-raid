@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -31,16 +32,21 @@ public class RaidRecordService {
     }
 
     @Transactional
-    public void endRaid (RaidEndRequestDto requestDto) throws RaidTimeoutException {
+    public void endRaid (RaidEndRequestDto requestDto) throws NotFoundRaidRecordException, RaidTimeoutException {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
         LocalDateTime endTime = LocalDateTime.now();
 
         bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
 
-        RaidRecordEntity raidRecordEntity = raidRecordRepository.getReferenceById(requestDto.getRaidRecordId());
+        Optional<RaidRecordEntity> raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId());
+
+        if (raidRecordEntity.isEmpty()) {
+            throw new NotFoundRaidRecordException("존재하지 않는 raidRecordId 입니다 : " + requestDto.getRaidRecordId());
+        }
+
         bossStateRepository.save(bossStateEntity.withRaidingState(false));
-        raidRecordRepository.save(raidRecordEntity.withRaidEndTime(endTime));
-        rankingRepositoryImple.save(raidRecordEntity);
+        raidRecordRepository.save(raidRecordEntity.get().withRaidEndTime(endTime));
+        rankingRepositoryImple.save(raidRecordEntity.get());
     }
 
     public RankingResponseDto getRankigList(RankingRequestDto requestDto) {

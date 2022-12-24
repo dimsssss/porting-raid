@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -119,7 +120,7 @@ class RaidRecordControllerTest {
                 .score(20)
                 .build();
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
-        Mockito.when(raidRecordRepository.getReferenceById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
+        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(Optional.of(raidRecordEntity));
         doNothing().when(rankingRepositoryImple).save(raidRecordEntity);
 
         mockMvc.perform(patch(url)
