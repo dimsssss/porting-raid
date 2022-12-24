@@ -40,8 +40,32 @@ public class RankingRepositoryImple {
         stringRedisTemplate.opsForZSet().addIfAbsent(KEY, userId, totalScore);
     }
 
-    private Set<ZSetOperations.TypedTuple<String>> getAllScores() {
-        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(KEY, 0, -1);
+    private Set<ZSetOperations.TypedTuple<String>> findAll() {
+        int start = 0;
+        int end = -1;
+        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(KEY, start, end);
+    }
+
+    private RankingEntity convertFrom(ZSetOperations.TypedTuple<String> score, int ranking) {
+        int totalScore = score.getScore().intValue();
+        Long userId = parseLong(score.getValue());
+        return RankingEntity.builder()
+                .totalScore(totalScore)
+                .userId(userId)
+                .ranking(ranking)
+                .build();
+    }
+
+    private List<RankingEntity> getRankingEntity(Set<ZSetOperations.TypedTuple<String>> scores) {
+        List<RankingEntity> rankings = new ArrayList<>();
+        int ranking = 0;
+
+        for (ZSetOperations.TypedTuple<String> score: scores) {
+            RankingEntity rank = convertFrom(score, ranking);
+            ranking += 1;
+            rankings.add(rank);
+        }
+        return rankings;
     }
 
     private List<RankingEntity> getAllRankWithScores(Set<ZSetOperations.TypedTuple<String>> scores) {
