@@ -38,12 +38,34 @@ public class BossStateEntity {
     @Builder
     public BossStateEntity() {}
 
-    public void onRaid() {
-        isRaiding = true;
+    private BossStateEntity(Long bossStateId, boolean isRaiding, int raidingMinute, Long latestRaidUserId, LocalDateTime raidStartAt,
+                           LocalDateTime raidEndAt, LocalDateTime createdAt, LocalDateTime deletedAt, Timestamp timestamp) {
+        this.bossStateId = bossStateId;
+        this.isRaiding = isRaiding;
+        this.raidingMinute = raidingMinute;
+        this.latestRaidUserId = latestRaidUserId;
+        this.raidStartAt = raidStartAt;
+        this.raidEndAt = raidEndAt;
+        this.createdAt = createdAt;
+        this.deletedAt = deletedAt;
+        this.timestamp = timestamp;
     }
 
-    public void offRaid() {
-        isRaiding = false;
+    public BossStateEntity withRaidingState(boolean isRaiding) {
+        return new BossStateEntity(
+                bossStateId,
+                isRaiding,
+                raidingMinute,
+                latestRaidUserId,
+                raidStartAt,
+                raidEndAt,
+                createdAt,
+                deletedAt,
+                timestamp);
+    }
+
+    public void onRaid() {
+        isRaiding = true;
     }
 
     public void setRaidStartAt(LocalDateTime raidStartAt) {

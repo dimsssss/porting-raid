@@ -8,4 +8,5 @@ import lombok.Getter;
 public class RaidEndRequestDto {
     private Long userId;
     private Long raidRecordId;
+    private Long bossStateId;
 }

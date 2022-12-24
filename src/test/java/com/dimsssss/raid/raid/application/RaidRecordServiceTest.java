@@ -58,8 +58,10 @@ class RaidRecordServiceTest {
         raidEndRequestDto = RaidEndRequestDto.builder()
                 .raidRecordId(1L)
                 .userId(1L)
+                .bossStateId(1L)
                 .build();
 
+        Mockito.when(bossStateRepository.getReferenceById(1L)).thenReturn(bossStateEntity);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         Mockito.when(raidRecordRepository.save(any(RaidRecordEntity.class))).thenReturn(raidRecordEntity);
     }
@@ -106,7 +108,6 @@ class RaidRecordServiceTest {
     @Test
     void endRaid_fail_when_time_out() {
         bossStateEntity.enterRaid(LocalDateTime.of(2022, 12, 11, 1,1,1));
-        bossStateEntity.offRaid();
         assertThatThrownBy(() -> raidRecordService.endRaid(raidEndRequestDto))
                 .isInstanceOf(RaidTimeoutException.class)
                 .hasMessage("주어진 레이드 시간이 지났습니다");
@@ -119,6 +120,7 @@ class RaidRecordServiceTest {
         RaidEndRequestDto otherRequestDto = RaidEndRequestDto.builder()
                 .raidRecordId(1L)
                 .userId(2L)
+                .bossStateId(1L)
                 .build();
 
         assertThatThrownBy(() -> raidRecordService.endRaid(otherRequestDto))

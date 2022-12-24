@@ -1,5 +1,6 @@
 package com.dimsssss.raid.raid.presentation;
 
+import com.dimsssss.raid.raid.application.NotFoundRaidRecordException;
 import com.dimsssss.raid.raid.application.RaidRecordService;
 import com.dimsssss.raid.raid.domain.RaidTimeoutException;
 import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
@@ -34,6 +35,8 @@ public class RaidRecordController {
         try {
             raidRecordService.endRaid(requestDto);
         } catch (RaidTimeoutException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
+        } catch (NotFoundRaidRecordException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage(), exception);
         }
     }

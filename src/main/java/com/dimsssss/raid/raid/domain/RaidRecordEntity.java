@@ -39,8 +39,16 @@ public class RaidRecordEntity {
                 .build();
     }
 
-    public void logRaidEndTime(LocalDateTime endTime) {
-        this.raidEndAt = endTime;
+    private RaidRecordEntity(Long raidRecordId, Long userId, Integer score, LocalDateTime raidStartAt, LocalDateTime raidEndAt) {
+        this.raidRecordId = raidRecordId;
+        this.userId = userId;
+        this.score = score;
+        this.raidStartAt = raidStartAt;
+        this.raidEndAt = raidEndAt;
+    }
+
+    public RaidRecordEntity withRaidEndTime(LocalDateTime endTime) {
+        return new RaidRecordEntity(raidRecordId, userId, score, raidStartAt, endTime);
     }
 
     public RaidHistory toRaidHistory() {

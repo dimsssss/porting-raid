@@ -105,6 +105,7 @@ class RaidRecordControllerTest {
                 .builder()
                 .userId(1L)
                 .raidRecordId(1L)
+                .bossStateId(1L)
                 .build();
 
         String url = "http://localhost:" + port + "/bossRaid/end";
@@ -119,8 +120,7 @@ class RaidRecordControllerTest {
                 .score(20)
                 .build();
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
-        doNothing().when(bossStateEntity).offRaid();
-        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(Optional.ofNullable(raidRecordEntity));
+        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(Optional.of(raidRecordEntity));
         doNothing().when(rankingRepositoryImple).save(raidRecordEntity);
 
         mockMvc.perform(patch(url)
