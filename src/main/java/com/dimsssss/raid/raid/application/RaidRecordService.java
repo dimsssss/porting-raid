@@ -32,15 +32,15 @@ public class RaidRecordService {
 
     @Transactional
     public void endRaid (RaidEndRequestDto requestDto) throws RaidTimeoutException {
-        BossStateEntity bossStateEntity = bossStateRepository.findBossState();
+        BossStateEntity bossStateEntity = bossStateRepository.getReferenceById(requestDto.getBossStateId());
         LocalDateTime endTime = LocalDateTime.now();
 
         bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
-        bossStateEntity.offRaid();
         RaidRecordEntity raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId()).orElseThrow(() -> {
             throw new IllegalArgumentException("존재 하지 않는 Record입니다. raidRecordId = " + requestDto.getRaidRecordId());
         });
 
+        bossStateRepository.save(bossStateEntity.withEndRaid(false));
         raidRecordEntity.logRaidEndTime(endTime);
         rankingRepositoryImple.save(raidRecordEntity);
     }
