@@ -144,10 +144,7 @@ class RaidRecordControllerTest {
     @Test
     public void getBossState_fail_when_raiding () throws Exception {
         String url = "http://localhost:" + port + "/bossRaid";
-        BossStateEntity bossStateEntity = new BossStateEntity();
-        bossStateEntity.setLatestRaidUserId(1L);
-        bossStateEntity.onRaid();
-        bossStateEntity.setRaidStartAt(LocalDateTime.now());
+        BossStateEntity bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now()).withUserId(1L);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         mockMvc.perform(get(url).with(csrf()))
                 .andExpect(status().is4xxClientError())
