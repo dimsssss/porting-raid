@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.List;
 
 import static java.lang.Long.parseLong;
 
@@ -18,10 +19,11 @@ public class RankingRepositoryImple {
     private static final String KEY = "leaderboard";
 
     public Optional<Integer> getPrevScore(Long userId) {
-        Set<ZSetOperations.TypedTuple<String>> tuples = getAllScores();
+        Set<ZSetOperations.TypedTuple<String>> tuples = findAll();
 
         for (ZSetOperations.TypedTuple<String> stringTypedTuple: tuples) {
-            if (parseLong(stringTypedTuple.getValue()) == userId) {
+            Long rankUserId = parseLong(stringTypedTuple.getValue());
+            if (rankUserId == userId) {
                 return Optional.ofNullable(stringTypedTuple.getScore().intValue());
             }
         }
