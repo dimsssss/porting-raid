@@ -76,7 +76,7 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간 내에 다른 raid 시작 요청이 오면 예외를 반환한다")
     @Test
     void startRaid_fail_when_raid_on() {
-        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now());
+        bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now()).withUserId(1L);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         assertThatThrownBy(() -> raidRecordService.startRaid(requestDto))
                 .isInstanceOf(RaidTimeoutException.class)
