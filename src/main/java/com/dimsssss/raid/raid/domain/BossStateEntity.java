@@ -64,12 +64,17 @@ public class BossStateEntity {
                 timestamp);
     }
 
-    public void onRaid() {
-        isRaiding = true;
-    }
-
-    public void setRaidStartAt(LocalDateTime raidStartAt) {
-        this.raidStartAt = raidStartAt;
+    public BossStateEntity withRaidingStateAndStartTime(boolean isRaiding, LocalDateTime startTime) {
+        return new BossStateEntity(
+                bossStateId,
+                isRaiding,
+                raidingMinute,
+                latestRaidUserId,
+                startTime,
+                raidEndAt,
+                createdAt,
+                deletedAt,
+                timestamp);
     }
 
     public void setLatestRaidUserId(Long userId) {
@@ -85,11 +90,6 @@ public class BossStateEntity {
 
         int raidTime = this.getRaidingMinute();
         return current.isAfter(latestStartRaidDateTime.plusMinutes(raidTime));
-    }
-
-    public void enterRaid(LocalDateTime current) {
-        this.onRaid();
-        this.setRaidStartAt(current);
     }
 
     public void validateRaidEnter(LocalDateTime current) throws RaidTimeoutException {
