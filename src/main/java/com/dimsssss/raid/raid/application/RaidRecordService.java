@@ -36,12 +36,10 @@ public class RaidRecordService {
         LocalDateTime endTime = LocalDateTime.now();
 
         bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
-        RaidRecordEntity raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId()).orElseThrow(() -> {
-            throw new IllegalArgumentException("존재 하지 않는 Record입니다. raidRecordId = " + requestDto.getRaidRecordId());
-        });
 
+        RaidRecordEntity raidRecordEntity = raidRecordRepository.getReferenceById(requestDto.getRaidRecordId());
         bossStateRepository.save(bossStateEntity.withEndRaid(false));
-        raidRecordEntity.logRaidEndTime(endTime);
+        raidRecordRepository.save(raidRecordEntity.withRaidEndTime(endTime));
         rankingRepositoryImple.save(raidRecordEntity);
     }
 
