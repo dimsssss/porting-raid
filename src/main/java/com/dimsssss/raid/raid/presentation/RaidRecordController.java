@@ -44,7 +44,7 @@ public class RaidRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/bossRaid/topRankerList", method = RequestMethod.GET)
     public RankingResponseDto getRankers(@RequestBody RankingRequestDto requestDto) {
-        return raidRecordService.getRankigList(requestDto);
+        return raidRecordService.getRankingList(requestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
