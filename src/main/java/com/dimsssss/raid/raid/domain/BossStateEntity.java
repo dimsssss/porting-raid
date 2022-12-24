@@ -1,7 +1,6 @@
 package com.dimsssss.raid.raid.domain;
 
 import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
-import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -35,7 +34,6 @@ public class BossStateEntity {
     @Version
     private Timestamp timestamp;
 
-    @Builder
     public BossStateEntity() {}
 
     private BossStateEntity(Long bossStateId, boolean isRaiding, int raidingMinute, Long latestRaidUserId, LocalDateTime raidStartAt,
@@ -77,8 +75,17 @@ public class BossStateEntity {
                 timestamp);
     }
 
-    public void setLatestRaidUserId(Long userId) {
-        this.latestRaidUserId = userId;
+    public BossStateEntity withUserId(Long userId) {
+        return new BossStateEntity(
+                bossStateId,
+                isRaiding,
+                raidingMinute,
+                userId,
+                raidStartAt,
+                raidEndAt,
+                createdAt,
+                deletedAt,
+                timestamp);
     }
 
     private boolean isTimeOut(LocalDateTime current) {
