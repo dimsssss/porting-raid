@@ -27,7 +27,6 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -75,19 +74,16 @@ class RaidRecordControllerTest {
             .andExpect(jsonPath("$.canEnter", is(true)));
     }
 
-    @DisplayName("POST /bossRaid/enter : 데이터베이스 예외 발생시 http status 500 반환")
+    @DisplayName("POST /bossRaid/enter : ObjectOptimisticLockingFailureException 예외 발생시 http status 500 반환")
     @WithMockUser
     @Test
-    public void start_ () throws Exception {
+    public void start_fail_when_database_exception () throws Exception {
         RaidStartRequestDto requestDto = new RaidStartRequestDto(1L, 3);
         BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
 
-        List<BossStateEntity> bossStateEntities = new ArrayList<>();
-        bossStateEntities.add(bossStateEntity);
-        Mockito.when(bossStateRepository.findAll()).thenReturn(bossStateEntities);
+        Mockito.when(bossStateEntity.withRaidingStateAndStartTime(any(Boolean.class), any(LocalDateTime.class))).thenReturn(bossStateEntity);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
-        doThrow(ObjectOptimisticLockingFailureException.class)
-                .when(bossStateEntity).enterRaid(any(LocalDateTime.class));
+        Mockito.when(bossStateRepository.save(bossStateEntity)).thenThrow(ObjectOptimisticLockingFailureException.class);
 
         String url = "http://localhost:" + port + "/bossRaid/enter";
 
