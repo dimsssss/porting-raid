@@ -18,7 +18,7 @@ public class RaidRecordEntity {
     @Column(name = "user_id")
     private Long userId;
     @Column
-    private int score;
+    private Integer score;
 
     @CreationTimestamp
     @Column(name = "raid_start_at")

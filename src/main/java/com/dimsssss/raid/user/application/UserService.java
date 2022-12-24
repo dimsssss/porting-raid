@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -29,7 +30,12 @@ public class UserService {
     public UserInformationResponseDto getUserHistory(Long userId) {
         List<RaidHistory> historyEntities = raidRecordRepository.findByUserId(userId)
                 .stream().map(RaidRecordEntity::toRaidHistory).collect(Collectors.toList());
-        int score = rankingRepositoryImple.getPrevScore(userId);
-        return new UserInformationResponseDto(score, historyEntities);
+
+        Optional<Integer> score = rankingRepositoryImple.getPrevScore(userId);
+
+        if (score.isPresent()) {
+            return new UserInformationResponseDto(score.get(), historyEntities);
+        }
+        return new UserInformationResponseDto(null, null);
     }
 }
