@@ -69,21 +69,7 @@ public class RankingRepositoryImple {
     }
 
     private List<RankingEntity> getAllRankWithScores(Set<ZSetOperations.TypedTuple<String>> scores) {
-        int rank = 0;
-        Iterator iterator = scores.iterator();
-        List<RankingEntity> rankers = new ArrayList<>();
-
-        while (iterator.hasNext()) {
-            ZSetOperations.TypedTuple<String> stringTypedTuple = (ZSetOperations.TypedTuple<String>) iterator.next();
-            RankingEntity rankingEntity = RankingEntity.builder()
-                    .ranking(rank)
-                    .userId(parseLong(stringTypedTuple.getValue()))
-                    .totalScore(stringTypedTuple.getScore().intValue())
-                    .build();
-            rankers.add(rankingEntity);
-            rank += 1;
-        }
-        return rankers;
+        return getRankingEntity(scores);
     }
 
     private RankingEntity getMyRank(List<RankingEntity> rankers, Long userId) {
