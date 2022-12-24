@@ -68,10 +68,6 @@ public class BossStateEntity {
         isRaiding = true;
     }
 
-    public void offRaid() {
-        isRaiding = false;
-    }
-
     public void setRaidStartAt(LocalDateTime raidStartAt) {
         this.raidStartAt = raidStartAt;
     }
