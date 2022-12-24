@@ -105,7 +105,7 @@ class RaidRecordServiceTest {
     @DisplayName("raid 시간이 남지 않았을 때 종료 요청이 오면 예외를 반환한다")
     @Test
     void endRaid_fail_when_time_out() {
-        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 24, 20, 20);
+        LocalDateTime raidStartTime = LocalDateTime.of(2022, 12, 23, 20, 20);
         bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(false, raidStartTime).withUserId(1L);
         Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
         assertThatThrownBy(() -> raidRecordService.endRaid(raidEndRequestDto))
