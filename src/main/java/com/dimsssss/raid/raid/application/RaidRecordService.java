@@ -38,7 +38,7 @@ public class RaidRecordService {
         bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
 
         RaidRecordEntity raidRecordEntity = raidRecordRepository.getReferenceById(requestDto.getRaidRecordId());
-        bossStateRepository.save(bossStateEntity.withEndRaid(false));
+        bossStateRepository.save(bossStateEntity.withRaidingState(false));
         raidRecordRepository.save(raidRecordEntity.withRaidEndTime(endTime));
         rankingRepositoryImple.save(raidRecordEntity);
     }
