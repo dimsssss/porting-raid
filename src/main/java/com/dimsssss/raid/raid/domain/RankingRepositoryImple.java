@@ -6,10 +6,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.Long.parseLong;
 
@@ -20,62 +18,73 @@ public class RankingRepositoryImple {
     private final StringRedisTemplate stringRedisTemplate;
     private static final String KEY = "leaderboard";
 
-    public int getPrevScore(Long userId) {
-        Set<ZSetOperations.TypedTuple<String>> tuples = getAllScores();
+    public Optional<Integer> getPrevScore(Long userId) {
+        Set<ZSetOperations.TypedTuple<String>> tuples = findAll();
 
         for (ZSetOperations.TypedTuple<String> stringTypedTuple: tuples) {
-            if (parseLong(stringTypedTuple.getValue()) == userId) {
-                return stringTypedTuple.getScore().intValue();
+            Long rankUserId = parseLong(stringTypedTuple.getValue());
+            if (rankUserId == userId) {
+                return Optional.ofNullable(stringTypedTuple.getScore().intValue());
             }
         }
-        return 0;
+        return Optional.empty();
     }
 
     public void save(RaidRecordEntity raidRecordEntity) {
-        int prevScore = getPrevScore(raidRecordEntity.getUserId());
-        int totalScore = prevScore + raidRecordEntity.getScore();
+        Optional<Integer> prevScore = getPrevScore(raidRecordEntity.getUserId());
+        int totalScore = 0;
+
+        if (prevScore.isPresent()) {
+            totalScore = prevScore.get() + raidRecordEntity.getScore();
+        }
+
         String userId = raidRecordEntity.getUserId().toString();
         stringRedisTemplate.opsForZSet().addIfAbsent(KEY, userId, totalScore);
     }
 
-    private Set<ZSetOperations.TypedTuple<String>> getAllScores() {
-        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(KEY, 0, -1);
+    private Set<ZSetOperations.TypedTuple<String>> findAll() {
+        int start = 0;
+        int end = -1;
+        return stringRedisTemplate.opsForZSet().reverseRangeWithScores(KEY, start, end);
     }
 
-    private List<RankingEntity> getRankAtAllScores(Set<ZSetOperations.TypedTuple<String>> scores) {
-        int rank = 0;
-        Iterator iterator = scores.iterator();
-        List<RankingEntity> rankers = new ArrayList<>();
+    private RankingEntity convertFrom(ZSetOperations.TypedTuple<String> score, int ranking) {
+        int totalScore = score.getScore().intValue();
+        Long userId = parseLong(score.getValue());
+        return RankingEntity.builder()
+                .totalScore(totalScore)
+                .userId(userId)
+                .ranking(ranking)
+                .build();
+    }
 
-        while (iterator.hasNext()) {
-            ZSetOperations.TypedTuple<String> stringTypedTuple = (ZSetOperations.TypedTuple<String>) iterator.next();
-            RankingEntity rankingEntity = RankingEntity.builder()
-                    .ranking(rank)
-                    .userId(parseLong(stringTypedTuple.getValue()))
-                    .totalScore(stringTypedTuple.getScore().intValue())
-                    .build();
-            rankers.add(rankingEntity);
-            rank += 1;
+    private List<RankingEntity> getRankingEntity(Set<ZSetOperations.TypedTuple<String>> scores) {
+        List<RankingEntity> rankings = new ArrayList<>();
+        int ranking = 0;
+
+        for (ZSetOperations.TypedTuple<String> score: scores) {
+            RankingEntity rank = convertFrom(score, ranking);
+            ranking += 1;
+            rankings.add(rank);
         }
-        return rankers;
+        return rankings;
+    }
+
+    private List<RankingEntity> getAllRankWithScores(Set<ZSetOperations.TypedTuple<String>> scores) {
+        return getRankingEntity(scores);
     }
 
     private RankingEntity getMyRank(List<RankingEntity> rankers, Long userId) {
-        for (RankingEntity rank: rankers) {
-            if (rank.getUserId() == userId) {
-                return rank;
-            }
-        }
-        return null;
+        return rankers.stream()
+                .filter(ranker -> ranker.getUserId() == userId)
+                .findFirst()
+                .orElse(null);
     }
 
-    public RankingResponseDto getTopTankingAndMyRanking(Long userId) {
-        Set<ZSetOperations.TypedTuple<String>> scores = getAllScores();
-        RankingResponseDto rankingResponseDto = new RankingResponseDto();
-        List<RankingEntity> rankers = getRankAtAllScores(scores);
+    public RankingResponseDto getTopRankingAndMyRanking(Long userId) {
+        Set<ZSetOperations.TypedTuple<String>> scores = findAll();
+        List<RankingEntity> rankers = getAllRankWithScores(scores);
         RankingEntity myRank = getMyRank(rankers, userId);
-        rankingResponseDto.setTopRankerInfoList(rankers);
-        rankingResponseDto.setMyRankingInfo(myRank);
-        return rankingResponseDto;
+        return new RankingResponseDto(myRank, rankers);
     }
 }
