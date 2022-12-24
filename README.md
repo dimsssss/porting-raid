@@ -54,6 +54,12 @@ in-memory와 RDBMS 모두 장단점이 있어서 어떤 것을 선택해야할�
 
 장기적인 관점을 위해 외부시스템에 대한 코드만 Mock으로 처리하는 것이 바람직해보인다.
 
+## Optional
+예측 가능한 코드를 작성하기 위해, 코드가 정상 동작을 하지 않았을 때를 명시적으로 알리기 위해
+null, Optional, 오류 반환이 있는데 java에서 지원하는 Optional을 적용
+
+https://dimsss.notion.site/6-455428654030423d9fb48dd469f61e94
+
 ## 참고 자료
 
 [sorted set](https://redis.io/docs/data-types/sorted-sets/)
