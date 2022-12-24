@@ -47,7 +47,7 @@ class RedisTemplateTest {
 
     @Test
     public void findAll() {
-        RankingResponseDto rankingInfo = rankingRepositoryImple.getTopTankingAndMyRanking(3L);
+        RankingResponseDto rankingInfo = rankingRepositoryImple.getTopRankingAndMyRanking(3L);
         RankingEntity myRanking = rankingInfo.getMyRankingInfo();
         List<RankingEntity> topRanking = rankingInfo.getTopRankerInfoList();
 

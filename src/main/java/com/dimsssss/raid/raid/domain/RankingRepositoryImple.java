@@ -79,8 +79,8 @@ public class RankingRepositoryImple {
                 .orElse(null);
     }
 
-    public RankingResponseDto getTopTankingAndMyRanking(Long userId) {
-        Set<ZSetOperations.TypedTuple<String>> scores = getAllScores();
+    public RankingResponseDto getTopRankingAndMyRanking(Long userId) {
+        Set<ZSetOperations.TypedTuple<String>> scores = findAll();
         List<RankingEntity> rankers = getAllRankWithScores(scores);
         RankingEntity myRank = getMyRank(rankers, userId);
         return new RankingResponseDto(myRank, rankers);

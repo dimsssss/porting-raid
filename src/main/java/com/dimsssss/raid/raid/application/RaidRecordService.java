@@ -46,7 +46,7 @@ public class RaidRecordService {
     }
 
     public RankingResponseDto getRankigList(RankingRequestDto requestDto) {
-        return rankingRepositoryImple.getTopTankingAndMyRanking(requestDto.getUserId());
+        return rankingRepositoryImple.getTopRankingAndMyRanking(requestDto.getUserId());
     }
 
     public BossStateResponseDto getBossState() throws RaidTimeoutException {
