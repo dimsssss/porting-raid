@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,6 +104,7 @@ class RaidRecordControllerTest {
                 .builder()
                 .userId(1L)
                 .raidRecordId(1L)
+                .bossStateId(1L)
                 .build();
 
         String url = "http://localhost:" + port + "/bossRaid/end";
@@ -118,9 +118,8 @@ class RaidRecordControllerTest {
                 .userId(1L)
                 .score(20)
                 .build();
-        Mockito.when(bossStateRepository.findBossState()).thenReturn(bossStateEntity);
-        doNothing().when(bossStateEntity).offRaid();
-        Mockito.when(raidRecordRepository.findById(requestDto.getRaidRecordId())).thenReturn(Optional.ofNullable(raidRecordEntity));
+        Mockito.when(bossStateRepository.getReferenceById(requestDto.getBossStateId())).thenReturn(bossStateEntity);
+        Mockito.when(raidRecordRepository.getReferenceById(requestDto.getRaidRecordId())).thenReturn(raidRecordEntity);
         doNothing().when(rankingRepositoryImple).save(raidRecordEntity);
 
         mockMvc.perform(patch(url)
