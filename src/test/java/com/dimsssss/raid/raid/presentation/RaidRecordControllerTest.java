@@ -4,6 +4,7 @@ import com.dimsssss.raid.raid.domain.*;
 import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
 import com.dimsssss.raid.raid.presentation.dto.RaidStartRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -48,12 +49,19 @@ class RaidRecordControllerTest {
     @MockBean
     RankingRepositoryImple rankingRepositoryImple;
 
+    ObjectMapper objectMapper;
+
+    @BeforeAll
+    void setup() {
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     @DisplayName("POST /bossRaid/enter 호출 시 응답 값과 201을 반환한다")
     @WithMockUser
     @Test
     public void start() throws Exception {
-        RaidStartRequestDto requestDto = new RaidStartRequestDto(1L, 3);
+        RaidStartRequestDto requestDto = new RaidStartRequestDto(1L, 3, LocalDateTime.now());
         BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
         RaidRecordEntity result = new RaidRecordEntity(1L, 3, 1L);
 
@@ -65,9 +73,11 @@ class RaidRecordControllerTest {
 
         String url = "http://localhost:" + port + "/bossRaid/enter";
 
+
+
         mockMvc.perform(post(url)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsString(requestDto))
+                    .content(objectMapper.writeValueAsString(requestDto))
                     .with(csrf()))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.raidRecordId", greaterThan(0)))
@@ -78,7 +88,7 @@ class RaidRecordControllerTest {
     @WithMockUser
     @Test
     public void start_fail_when_database_exception () throws Exception {
-        RaidStartRequestDto requestDto = new RaidStartRequestDto(1L, 3);
+        RaidStartRequestDto requestDto = new RaidStartRequestDto(1L, 3, LocalDateTime.now());
         BossStateEntity bossStateEntity = Mockito.mock(BossStateEntity.class);
 
         Mockito.when(bossStateEntity.withRaidingStateAndStartTime(any(Boolean.class), any(LocalDateTime.class))).thenReturn(bossStateEntity);
@@ -89,7 +99,7 @@ class RaidRecordControllerTest {
 
         mockMvc.perform(post(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto))
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .with(csrf()))
                 .andExpect(status().is5xxServerError());
     }
@@ -121,7 +131,7 @@ class RaidRecordControllerTest {
 
         mockMvc.perform(patch(url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDto))
+                        .content(objectMapper.writeValueAsString(requestDto))
                         .with(csrf()))
                 .andExpect(status().isOk());
     }

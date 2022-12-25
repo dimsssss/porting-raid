@@ -43,9 +43,11 @@ class RaidRecordServiceTest {
 
     @BeforeEach
     void setup() {
+        LocalDateTime current = LocalDateTime.now();
         requestDto = RaidStartRequestDto.builder()
                 .userId(1L)
                 .level(3)
+                .raidStartTime(current)
                 .build();
 
         raidRecordEntity = RaidRecordEntity.builder()
@@ -58,6 +60,7 @@ class RaidRecordServiceTest {
                 .raidRecordId(1L)
                 .userId(1L)
                 .bossStateId(1L)
+                .raidEndTime(current)
                 .build();
         Mockito.when(raidRecordRepository.save(any(RaidRecordEntity.class))).thenReturn(raidRecordEntity);
     }
@@ -120,6 +123,7 @@ class RaidRecordServiceTest {
                 .raidRecordId(1L)
                 .userId(2L)
                 .bossStateId(1L)
+                .raidEndTime(LocalDateTime.now())
                 .build();
 
         bossStateEntity = new BossStateEntity().withRaidingStateAndStartTime(true, LocalDateTime.now()).withUserId(1L);
