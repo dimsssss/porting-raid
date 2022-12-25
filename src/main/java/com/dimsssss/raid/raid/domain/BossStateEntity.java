@@ -1,6 +1,7 @@
 package com.dimsssss.raid.raid.domain;
 
 import com.dimsssss.raid.raid.domain.dto.BossStateResponseDto;
+import com.dimsssss.raid.raid.presentation.dto.RaidEndRequestDto;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -107,11 +108,11 @@ public class BossStateEntity {
             throw new RaidTimeoutException("현재 레이드가 진행중입니다");
         }
     }
-    public void validateRaidEnd(LocalDateTime current, Long userId) throws RaidTimeoutException {
-        if (isTimeOut(current)) {
+    public void validateRaidEnd(RaidEndRequestDto requestDto) throws RaidTimeoutException {
+        if (isTimeOut(requestDto.getRaidEndTime())) {
             throw new RaidTimeoutException("주어진 레이드 시간이 지났습니다");
         }
-        if (!this.getLatestRaidUserId().equals(userId)) {
+        if (!this.getLatestRaidUserId().equals(requestDto.getUserId())) {
             throw new IllegalArgumentException("레이드 진행중인 아이디와 종료 아이디가 다릅니다. raidUserId: %s, requestUserId: %s");
         }
     }
