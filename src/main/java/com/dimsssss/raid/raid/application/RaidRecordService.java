@@ -22,11 +22,10 @@ public class RaidRecordService {
     @Transactional
     public RaidStartResponseDto startRaid (RaidStartRequestDto requestDto) throws RaidTimeoutException {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
-        LocalDateTime startTime = LocalDateTime.now();
 
-        bossStateEntity.validateRaidEnter(startTime);
+        bossStateEntity.validateRaidEnter(requestDto.getRaidStartTime());
 
-        bossStateRepository.save(bossStateEntity.withRaidingStateAndStartTime(true, startTime));
+        bossStateRepository.save(bossStateEntity.withRaidingStateAndStartTime(true, requestDto.getRaidStartTime()));
         RaidRecordEntity result = raidRecordRepository.save(requestDto.convertFrom());
         return result.toResponse();
     }
@@ -34,9 +33,8 @@ public class RaidRecordService {
     @Transactional
     public void endRaid (RaidEndRequestDto requestDto) throws NotFoundRaidRecordException, RaidTimeoutException {
         BossStateEntity bossStateEntity = bossStateRepository.findBossState();
-        LocalDateTime endTime = LocalDateTime.now();
 
-        bossStateEntity.validateRaidEnd(endTime, requestDto.getUserId());
+        bossStateEntity.validateRaidEnd(requestDto);
 
         Optional<RaidRecordEntity> raidRecordEntity = raidRecordRepository.findById(requestDto.getRaidRecordId());
 
@@ -45,7 +43,7 @@ public class RaidRecordService {
         }
 
         bossStateRepository.save(bossStateEntity.withRaidingState(false));
-        raidRecordRepository.save(raidRecordEntity.get().withRaidEndTime(endTime));
+        raidRecordRepository.save(raidRecordEntity.get().withRaidEndTime(requestDto.getRaidEndTime()));
         rankingRepositoryImple.save(raidRecordEntity.get());
     }
 
